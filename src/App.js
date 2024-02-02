@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./XModal.css"; // Import your CSS file for styling
 
 const XModal = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,47 +10,58 @@ const XModal = () => {
     phone: "",
   });
 
+  const [validationErrors, setValidationErrors] = useState({
+    username: "",
+    email: "",
+    dob: "",
+    phone: "",
+  });
+
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData({ ...formData, [id]: value });
+    setValidationErrors({ ...validationErrors, [id]: "" });
   };
 
-  const handleSubmit = () => {
+  const validateForm = () => {
     const { username, email, dob, phone } = formData;
 
-    if (!username || !email || !dob || !phone) {
-      alert("Please fill out all fields.");
-      return;
+    const errors = {};
+
+    if (!username) {
+      errors.username = "Please enter a username.";
     }
 
-    if (!email.includes("@")) {
-      alert("Invalid email. Please check your email address.");
-      return;
+    if (!email || !email.includes("@")) {
+      errors.email = "Please enter a valid email address.";
+    }
+
+    if (!dob) {
+      errors.dob = "Please enter a date of birth.";
     }
 
     if (!/^\d{10}$/.test(phone)) {
-      alert("Invalid phone number. Please enter a 10-digit phone number.");
-      return;
+      errors.phone = "Please enter a valid 10-digit phone number.";
     }
 
-    const currentDate = new Date();
-    const enteredDate = new Date(dob);
+    setValidationErrors(errors);
 
-    if (enteredDate > currentDate) {
-      alert("Invalid date of birth. Please enter a past date.");
-      return;
+    return Object.keys(errors).length === 0; // Return true if there are no errors
+  };
+
+  const handleSubmit = () => {
+    if (validateForm()) {
+      // Perform submit logic here (e.g., send data to server)
+
+      // Close the modal and reset form data
+      setIsOpen(false);
+      setFormData({
+        username: "",
+        email: "",
+        dob: "",
+        phone: "",
+      });
     }
-
-    // Perform submit logic here (e.g., send data to server)
-
-    // Close the modal and reset form data
-    setIsOpen(false);
-    setFormData({
-      username: "",
-      email: "",
-      dob: "",
-      phone: "",
-    });
   };
 
   const handleCloseModal = () => {
@@ -58,7 +70,6 @@ const XModal = () => {
 
   return (
     <div>
-      <h1>User Details Modal</h1>
       <button onClick={() => setIsOpen(true)}>Open Form</button>
 
       {isOpen && (
@@ -71,8 +82,8 @@ const XModal = () => {
                 id="username"
                 value={formData.username}
                 onChange={handleInputChange}
-                required
               />
+              <div className="error-message">{validationErrors.username}</div>
 
               <label htmlFor="email">Email:</label>
               <input
@@ -80,24 +91,26 @@ const XModal = () => {
                 id="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                required
               />
-              <label htmlFor="phone">Phone Number:</label>
-              <input
-                type="text"
-                id="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                required
-              />
+              <div className="error-message">{validationErrors.email}</div>
+
               <label htmlFor="dob">Date of Birth:</label>
               <input
                 type="date"
                 id="dob"
                 value={formData.dob}
                 onChange={handleInputChange}
-                required
               />
+              <div className="error-message">{validationErrors.dob}</div>
+
+              <label htmlFor="phone">Phone Number:</label>
+              <input
+                type="text"
+                id="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+              />
+              <div className="error-message">{validationErrors.phone}</div>
 
               <button
                 type="button"
