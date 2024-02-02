@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import "./XModal.css"; // Import your CSS file for styling
 
 const XModal = () => {
   const [isOpen, setIsOpen] = useState(false);
