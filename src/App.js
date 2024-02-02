@@ -69,11 +69,13 @@ const XModal = () => {
 
   return (
     <div>
+      <h1>User Details Modal</h1>
       <button onClick={() => setIsOpen(true)}>Open Form</button>
 
       {isOpen && (
         <div className="modal" onClick={handleCloseModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3>Fill Details</h3>
             <form>
               <label htmlFor="username">Username:</label>
               <input
