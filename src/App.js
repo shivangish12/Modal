@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 const XModal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -9,43 +8,33 @@ const XModal = () => {
     phone: "",
   });
 
-  const [validationErrors, setValidationErrors] = useState({
-    username: "",
-    email: "",
-    dob: "",
-    phone: "",
-  });
-
-  const handleInputChange = (e) => {
-    const { id, value } = e.target;
-    setFormData({ ...formData, [id]: value });
-    setValidationErrors({ ...validationErrors, [id]: "" });
-  };
-
   const validateForm = () => {
     const { username, email, dob, phone } = formData;
 
-    const errors = {};
-
-    if (!username) {
-      errors.username = "Please enter a username.";
+    if (!username || !email || !dob || !phone) {
+      // alert("Please fill out all fields.");
+      return false;
     }
 
-    if (!email || !email.includes("@")) {
-      errors.email = "Please enter a valid email address.";
-    }
-
-    if (!dob) {
-      errors.dob = "Please enter a date of birth.";
+    if (!email.includes("@")) {
+      alert("Invalid email. Please check your email address.");
+      return false;
     }
 
     if (!/^\d{10}$/.test(phone)) {
-      errors.phone = "Please enter a valid 10-digit phone number.";
+      alert("Invalid phone number. Please enter a 10-digit phone number.");
+      return false;
     }
 
-    setValidationErrors(errors);
+    const currentDate = new Date();
+    const enteredDate = new Date(dob);
 
-    return Object.keys(errors).length === 0; // Return true if there are no errors
+    if (enteredDate > currentDate) {
+      alert("Invalid date of birth. Date of birth cannot be in the future");
+      return false;
+    }
+
+    return true; // Return true if there are no errors
   };
 
   const handleSubmit = () => {
@@ -63,6 +52,11 @@ const XModal = () => {
     }
   };
 
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormData({ ...formData, [id]: value });
+  };
+
   const handleCloseModal = () => {
     setIsOpen(false);
   };
@@ -75,7 +69,7 @@ const XModal = () => {
       {isOpen && (
         <div className="modal" onClick={handleCloseModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>Fill Details</h3>
+            <h4>Fill Details</h4>
             <form>
               <label htmlFor="username">Username:</label>
               <input
@@ -83,8 +77,8 @@ const XModal = () => {
                 id="username"
                 value={formData.username}
                 onChange={handleInputChange}
+                required
               />
-              <div className="error-message">{validationErrors.username}</div>
 
               <label htmlFor="email">Email:</label>
               <input
@@ -92,8 +86,8 @@ const XModal = () => {
                 id="email"
                 value={formData.email}
                 onChange={handleInputChange}
+                required
               />
-              <div className="error-message">{validationErrors.email}</div>
 
               <label htmlFor="dob">Date of Birth:</label>
               <input
@@ -101,8 +95,8 @@ const XModal = () => {
                 id="dob"
                 value={formData.dob}
                 onChange={handleInputChange}
+                required
               />
-              <div className="error-message">{validationErrors.dob}</div>
 
               <label htmlFor="phone">Phone Number:</label>
               <input
@@ -110,8 +104,8 @@ const XModal = () => {
                 id="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
+                required
               />
-              <div className="error-message">{validationErrors.phone}</div>
 
               <button
                 type="button"
