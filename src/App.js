@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import "./XModal.css"; // Import your CSS file for styling
+
 const XModal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -8,11 +10,12 @@ const XModal = () => {
     phone: "",
   });
 
+  const modalContentRef = useRef();
+
   const validateForm = () => {
     const { username, email, dob, phone } = formData;
 
     if (!username || !email || !dob || !phone) {
-      // alert("Please fill out all fields.");
       return false;
     }
 
@@ -34,14 +37,11 @@ const XModal = () => {
       return false;
     }
 
-    return true; // Return true if there are no errors
+    return true;
   };
 
   const handleSubmit = () => {
     if (validateForm()) {
-      // Perform submit logic here (e.g., send data to server)
-
-      // Close the modal and reset form data
       setIsOpen(false);
       setFormData({
         username: "",
@@ -61,6 +61,23 @@ const XModal = () => {
     setIsOpen(false);
   };
 
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (
+        modalContentRef.current &&
+        !modalContentRef.current.contains(e.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      window.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
   return (
     <div>
       <h1>User Details Modal</h1>
@@ -68,7 +85,11 @@ const XModal = () => {
 
       {isOpen && (
         <div className="modal" onClick={handleCloseModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal-content"
+            ref={modalContentRef}
+            onClick={(e) => e.stopPropagation()}
+          >
             <h4>Fill Details</h4>
             <form>
               <label htmlFor="username">Username:</label>
